@@ -6,19 +6,28 @@
 
 #import "MGStyledBox.h"
 
-#define DEFAULT_WIDTH          304.0
-#define DEFAULT_TOP_MARGIN      10.0
-#define DEFAULT_LEFT_MARGIN      8.0
+#define DEFAULT_WIDTH          318.0
+#define DEFAULT_TOP_MARGIN      0.0
+#define DEFAULT_LEFT_MARGIN      1.0
 #define CORNER_RADIUS            4.0
 
-@implementation MGStyledBox
+@implementation MGStyledBox{
+    //capture background color
+    //highlight method may change background
+    //restore when highlight cancled
+    UIColor* backGroundColor;
+    
+}
+@synthesize enableViewHighlight=_enableViewHighlight;
 
 - (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
+        self.enableViewHighlight=YES;
         self.autoresizesSubviews = YES;
         self.topMargin = DEFAULT_TOP_MARGIN;
-        self.bottomMargin = 0;
+        self.bottomMargin = 0.5;
+        
     }
     return self;
 }
@@ -55,5 +64,27 @@
     self.layer.shadowPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds
             cornerRadius:self.layer.cornerRadius].CGPath;
 }
+-(void) enableSelectWithTarget:(id)target action:(SEL) action{
+    UITapGestureRecognizer *gestureRecongnizer=[[UITapGestureRecognizer alloc] init];
+    [gestureRecongnizer addTarget:target action:action];
+    [self addGestureRecognizer:gestureRecongnizer];
+}
 
+#pragma mark -
+#pragma mark Override UIView Methods
+
+/*!
+ * Highlight Box when taped
+ */
+-(void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    if (_enableViewHighlight) {
+    backGroundColor=self.backgroundColor;
+    [self setBackgroundColor:[UIColor colorWithPatternImage:
+                              [UIImage imageNamed:@"HighlightBackground.PNG"]]];  
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+        [self setBackgroundColor:backGroundColor];
+    });
+    }
+}
 @end

@@ -13,5 +13,6 @@
 
 + (id)box;
 + (id)boxWithWidth:(CGFloat)width;
-
+-(void) enableSelectWithTarget:(id)target action:(SEL) action;
+@property (nonatomic) BOOL enableViewHighlight;
 @end
